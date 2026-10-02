@@ -2,6 +2,8 @@
 
 A React + Vite app that demonstrates global error capture and a live error dashboard.
 
+![Dashboard](docs/dashboard.png)
+
 ## Architecture
 
 ```
