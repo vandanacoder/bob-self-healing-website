@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useBrokenMode } from '../BrokenModeContext.jsx';
 
 export default function Dashboard() {
@@ -6,6 +6,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [clearing, setClearing] = useState(false);
   const { setBrokenMode } = useBrokenMode();
+  // Map of error id → { status: 'loading'|'done'|'error', cause, fix }
+  const [explanations, setExplanations] = useState({});
 
   const fetchErrors = useCallback(() => {
     fetch('/api/errors')
@@ -41,6 +43,28 @@ export default function Dashboard() {
         setErrors((prev) =>
           prev.map((e) => (e.id === updated.id ? updated : e))
         );
+      });
+  }
+
+  function explainError(err) {
+    setExplanations((prev) => ({ ...prev, [err.id]: { status: 'loading' } }));
+    fetch('/api/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: err.message }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        setExplanations((prev) => ({
+          ...prev,
+          [err.id]: { status: 'done', cause: data.cause, fix: data.fix },
+        }));
+      })
+      .catch(() => {
+        setExplanations((prev) => ({
+          ...prev,
+          [err.id]: { status: 'error' },
+        }));
       });
   }
 
@@ -95,33 +119,68 @@ export default function Dashboard() {
                 <th>Line</th>
                 <th>Status</th>
                 <th></th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              {errors.map((err, i) => (
-                <tr key={err.id} className={err.healed ? 'row-healed' : ''}>
-                  <td className="muted">{i + 1}</td>
-                  <td className="nowrap">{new Date(err.time).toLocaleString()}</td>
-                  <td className="msg-cell">{err.message}</td>
-                  <td className="file-cell muted">{err.file}</td>
-                  <td className="muted">{err.line ?? '—'}</td>
-                  <td>
-                    {err.healed
-                      ? <span className="status-healed">Healed</span>
-                      : <span className="status-open">Open</span>}
-                  </td>
-                  <td>
-                    {!err.healed && (
-                      <button
-                        className="btn btn-sm btn-heal"
-                        onClick={() => healError(err.id)}
-                      >
-                        🩹 Heal
-                      </button>
+              {errors.map((err, i) => {
+                const expl = explanations[err.id];
+                return (
+                  <React.Fragment key={err.id}>
+                    <tr className={err.healed ? 'row-healed' : ''}>
+                      <td className="muted">{i + 1}</td>
+                      <td className="nowrap">{new Date(err.time).toLocaleString()}</td>
+                      <td className="msg-cell">{err.message}</td>
+                      <td className="file-cell muted">{err.file}</td>
+                      <td className="muted">{err.line ?? '—'}</td>
+                      <td>
+                        {err.healed
+                          ? <span className="status-healed">Healed</span>
+                          : <span className="status-open">Open</span>}
+                      </td>
+                      <td>
+                        {!err.healed && (
+                          <button
+                            className="btn btn-sm btn-heal"
+                            onClick={() => healError(err.id)}
+                          >
+                            🩹 Heal
+                          </button>
+                        )}
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-explain"
+                          onClick={() => explainError(err)}
+                          disabled={expl?.status === 'loading'}
+                        >
+                          {expl?.status === 'loading' ? '…' : '💡 Explain'}
+                        </button>
+                      </td>
+                    </tr>
+                    {expl?.status === 'done' && (
+                      <tr key={`${err.id}-expl`} className={err.healed ? 'row-healed' : ''}>
+                        <td colSpan={8} className="explain-cell">
+                          <div className="explain-panel">
+                            <span className="explain-label">Cause:</span> {expl.cause}
+                            <span className="explain-sep"> · </span>
+                            <span className="explain-label">Fix:</span> {expl.fix}
+                          </div>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                </tr>
-              ))}
+                    {expl?.status === 'error' && (
+                      <tr key={`${err.id}-expl-err`} className={err.healed ? 'row-healed' : ''}>
+                        <td colSpan={8} className="explain-cell">
+                          <div className="explain-panel explain-panel-error">
+                            Could not fetch explanation. Check that the server is running.
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </tbody>
           </table>
         </div>

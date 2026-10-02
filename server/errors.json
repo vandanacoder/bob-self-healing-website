@@ -126,5 +126,27 @@
     "line": null,
     "time": "2026-10-02T10:15:29.026Z",
     "healed": true
+  },
+  {
+    "id": 1790937810461,
+    "message": "API call failed: HTTP 404",
+    "file": "http://localhost:5173/",
+    "line": null,
+    "time": "2026-10-02T10:43:30.453Z"
+  },
+  {
+    "id": 1790937831997,
+    "message": "Uncaught TypeError: Cannot read properties of undefined (reading 'property')",
+    "file": "http://localhost:5173/src/pages/Home.jsx",
+    "line": 47,
+    "time": "2026-10-02T10:43:51.989Z"
+  },
+  {
+    "id": 1790937832003,
+    "message": "Uncaught TypeError: Cannot read properties of undefined (reading 'property')",
+    "file": "http://localhost:5173/node_modules/.vite/deps/chunk-XPR23Y44.js?v=344af4d8",
+    "line": 3748,
+    "time": "2026-10-02T10:43:51.994Z",
+    "healed": true
   }
 ]

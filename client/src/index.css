@@ -218,3 +218,39 @@ nav { display: flex; gap: 1.5rem; }
 }
 .status-broken { color: #b91c1c; font-weight: 600; }
 .status-safe   { color: #15803d; }
+
+/* Explain button */
+.btn-explain {
+  background: #7c5cd8;
+  color: #fff;
+}
+
+/* Explain result row */
+.explain-cell {
+  padding: 0 0.9rem 0.65rem !important;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.explain-panel {
+  background: #f3f0fc;
+  border-left: 3px solid #7c5cd8;
+  border-radius: 4px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.82rem;
+  color: #1f2328;
+  line-height: 1.55;
+}
+
+.explain-panel-error {
+  background: #fff1f2;
+  border-left-color: #ef4444;
+  color: #b91c1c;
+}
+
+.explain-label {
+  font-weight: 600;
+}
+
+.explain-sep {
+  color: #adb5bd;
+}
