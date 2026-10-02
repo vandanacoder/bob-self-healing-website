@@ -132,14 +132,16 @@
     "message": "API call failed: HTTP 404",
     "file": "http://localhost:5173/",
     "line": null,
-    "time": "2026-10-02T10:43:30.453Z"
+    "time": "2026-10-02T10:43:30.453Z",
+    "healed": true
   },
   {
     "id": 1790937831997,
     "message": "Uncaught TypeError: Cannot read properties of undefined (reading 'property')",
     "file": "http://localhost:5173/src/pages/Home.jsx",
     "line": 47,
-    "time": "2026-10-02T10:43:51.989Z"
+    "time": "2026-10-02T10:43:51.989Z",
+    "healed": true
   },
   {
     "id": 1790937832003,
